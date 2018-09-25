@@ -1,10 +1,13 @@
 import http from "http"
+import LogRocket from "logrocket"
 import { env, mongo, port, ip, apiRoot } from "./config"
 import mongoose from "./services/mongoose"
 import express from "./services/express"
 import api from "./api"
 import socketIO from "socket.io"
 import startRedAlert from "./redAlert"
+
+LogRocket.init("cnlb6x/redalert")
 
 const app = express(apiRoot, api)
 const httpServer = http.createServer(app)
