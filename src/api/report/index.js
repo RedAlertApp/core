@@ -1,13 +1,22 @@
-import { Router } from 'express'
-import { middleware as query } from 'querymen'
-import { middleware as body } from 'bodymen'
-import { token } from '../../services/passport'
-import { create, index, show, update, destroy } from './controller'
-import { schema } from './model'
-export Report, { schema } from './model'
+import { Router } from "express"
+import { middleware as query } from "querymen"
+import { middleware as body } from "bodymen"
+import { token } from "../../services/passport"
+import { create, index, show, update, destroy } from "./controller"
+import { schema } from "./model"
+export Report, { schema } from "./model"
 
 const router = new Router()
-const { userID, latitude, longitude, description, category, confirmations, fixed, extra } = schema.tree
+const {
+  userID,
+  latitude,
+  longitude,
+  description,
+  category,
+  confirmations,
+  fixed,
+  extra
+} = schema.tree
 
 /**
  * @api {post} /reports Create report
@@ -28,10 +37,21 @@ const { userID, latitude, longitude, description, category, confirmations, fixed
  * @apiError 404 Report not found.
  * @apiError 401 user access only.
  */
-router.post('/',
+router.post(
+  "/",
   token({ required: true }),
-  body({ userID, latitude, longitude, description, category, confirmations, fixed, extra }),
-  create)
+  body({
+    userID,
+    latitude,
+    longitude,
+    description,
+    category,
+    confirmations,
+    fixed,
+    extra
+  }),
+  create
+)
 
 /**
  * @api {get} /reports Retrieve reports
@@ -45,10 +65,7 @@ router.post('/',
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 401 admin access only.
  */
-router.get('/',
-  token({ required: true, roles: ['admin'] }),
-  query(),
-  index)
+router.get("/", token({ required: true, roles: ["admin"] }), query(), index)
 
 /**
  * @api {get} /reports/:id Retrieve report
@@ -61,9 +78,7 @@ router.get('/',
  * @apiError 404 Report not found.
  * @apiError 401 admin access only.
  */
-router.get('/:id',
-  token({ required: true, roles: ['admin'] }),
-  show)
+router.get("/:id", token({ required: true, roles: ["admin"] }), show)
 
 /**
  * @api {put} /reports/:id Update report
@@ -84,10 +99,21 @@ router.get('/:id',
  * @apiError 404 Report not found.
  * @apiError 401 admin access only.
  */
-router.put('/:id',
-  token({ required: true, roles: ['admin'] }),
-  body({ userID, latitude, longitude, description, category, confirmations, fixed, extra }),
-  update)
+router.put(
+  "/:id",
+  token({ required: true, roles: ["admin"] }),
+  body({
+    userID,
+    latitude,
+    longitude,
+    description,
+    category,
+    confirmations,
+    fixed,
+    extra
+  }),
+  update
+)
 
 /**
  * @api {delete} /reports/:id Delete report
@@ -99,8 +125,6 @@ router.put('/:id',
  * @apiError 404 Report not found.
  * @apiError 401 admin access only.
  */
-router.delete('/:id',
-  token({ required: true, roles: ['admin'] }),
-  destroy)
+router.delete("/:id", token({ required: true, roles: ["admin"] }), destroy)
 
 export default router

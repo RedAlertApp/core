@@ -74,12 +74,7 @@ reportSchema.methods = {
       updatedAt: this.updatedAt
     }
 
-    return full
-      ? {
-          ...view
-          // add properties for a full view
-        }
-      : view
+    return full ? { ...view } : view
   }
 }
 

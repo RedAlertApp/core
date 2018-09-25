@@ -5,6 +5,7 @@ const startRedAlert = io => {
     console.log("socket connected")
 
     Report.find({ fixed: false }, (err, reports) => {
+      if (err) console.error(err)
       socket.emit("reports", reports)
     })
 
@@ -20,7 +21,9 @@ const startRedAlert = io => {
       })
 
       newReport.save((err, report) => {
+        if (err) console.error(err)
         Report.find({ fixed: false }, (err, reports) => {
+          if (err) console.error(err)
           io.emit("reports", reports)
         })
       })
@@ -31,7 +34,9 @@ const startRedAlert = io => {
         { _id: reportID },
         { fixed: true },
         (err, result) => {
+          if (err) console.error(err)
           Report.find({ fixed: false }, (err, reports) => {
+            if (err) console.error(err)
             io.emit("reports", reports)
           })
         }
@@ -43,7 +48,9 @@ const startRedAlert = io => {
         { _id: reportID },
         { $inc: { confirmations: 1 } },
         (err, result) => {
+          if (err) console.error(err)
           Report.find({ fixed: false }, (err, reports) => {
+            if (err) console.error(err)
             io.emit("reports", reports)
           })
         }
