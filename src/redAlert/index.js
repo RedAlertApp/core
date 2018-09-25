@@ -1,5 +1,4 @@
 import { Report } from "../api/report"
-import { User } from "../api/user"
 
 const startRedAlert = io => {
   io.on("connection", socket => {
