@@ -20,7 +20,7 @@ export const create = (
       const { user, token } = reset
       link = `${link.replace(/\/$/, "")}/${token}`
       const content = `
-        Hey, ${user.name}.<br><br>
+        Hey, ${user.username}.<br><br>
         You requested a new password for your RedAlertApi account.<br>
         Please use the following link to set a new password. It will expire in 1 hour.<br><br>
         <a href="${link}">${link}</a><br><br>

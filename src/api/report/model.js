@@ -8,6 +8,12 @@ const reportSchema = new mongoose.Schema(
     //   ref: "User",
     //   required: true
     // },
+
+    // name of user who created this report
+    userID: {
+      type: String,
+      required: true
+    },
     latitude: {
       type: Number,
       require: true

@@ -10,12 +10,12 @@ let user1, user2, admin, session1, session2, adminSession
 
 beforeEach(async () => {
   user1 = await User.create({
-    name: "user",
+    username: "user",
     email: "a@a.com",
     password: "123456"
   })
   user2 = await User.create({
-    name: "user",
+    username: "user",
     email: "b@b.com",
     password: "123456"
   })
@@ -58,14 +58,14 @@ test("GET /users?q=user 200 (admin)", async () => {
   expect(body.rows.length).toBe(2)
 })
 
-test("GET /users?fields=name 200 (admin)", async () => {
+test("GET /users?fields=username 200 (admin)", async () => {
   const { status, body } = await request(app())
     .get(apiRoot)
-    .query({ access_token: adminSession, fields: "name" })
+    .query({ access_token: adminSession, fields: "username" })
   expect(status).toBe(200)
   expect(Array.isArray(body.rows)).toBe(true)
   expect(Number.isNaN(body.count)).toBe(false)
-  expect(Object.keys(body.rows[0])).toEqual(["id", "name"])
+  expect(Object.keys(body.rows[0])).toEqual(["id", "username"])
 })
 
 test("GET /users 401 (user)", async () => {
@@ -234,10 +234,10 @@ test("POST /users 401", async () => {
 test("PUT /users/me 200 (user)", async () => {
   const { status, body } = await request(app())
     .put(apiRoot + "/me")
-    .send({ access_token: session1, name: "test" })
+    .send({ access_token: session1, username: "test" })
   expect(status).toBe(200)
   expect(typeof body).toBe("object")
-  expect(body.name).toBe("test")
+  expect(body.username).toBe("test")
 })
 
 test("PUT /users/me 200 (user)", async () => {
@@ -252,17 +252,17 @@ test("PUT /users/me 200 (user)", async () => {
 test("PUT /users/me 401", async () => {
   const { status } = await request(app())
     .put(apiRoot + "/me")
-    .send({ name: "test" })
+    .send({ username: "test" })
   expect(status).toBe(401)
 })
 
 test("PUT /users/:id 200 (user)", async () => {
   const { status, body } = await request(app())
     .put(`${apiRoot}/${user1.id}`)
-    .send({ access_token: session1, name: "test" })
+    .send({ access_token: session1, username: "test" })
   expect(status).toBe(200)
   expect(typeof body).toBe("object")
-  expect(body.name).toBe("test")
+  expect(body.username).toBe("test")
 })
 
 test("PUT /users/:id 200 (user)", async () => {
@@ -277,30 +277,30 @@ test("PUT /users/:id 200 (user)", async () => {
 test("PUT /users/:id 200 (admin)", async () => {
   const { status, body } = await request(app())
     .put(`${apiRoot}/${user1.id}`)
-    .send({ access_token: adminSession, name: "test" })
+    .send({ access_token: adminSession, username: "test" })
   expect(status).toBe(200)
   expect(typeof body).toBe("object")
-  expect(body.name).toBe("test")
+  expect(body.username).toBe("test")
 })
 
 test("PUT /users/:id 401 (user) - another user", async () => {
   const { status } = await request(app())
     .put(`${apiRoot}/${user1.id}`)
-    .send({ access_token: session2, name: "test" })
+    .send({ access_token: session2, username: "test" })
   expect(status).toBe(401)
 })
 
 test("PUT /users/:id 401", async () => {
   const { status } = await request(app())
     .put(`${apiRoot}/${user1.id}`)
-    .send({ name: "test" })
+    .send({ username: "test" })
   expect(status).toBe(401)
 })
 
 test("PUT /users/:id 404 (admin)", async () => {
   const { status } = await request(app())
     .put(apiRoot + "/123456789098765432123456")
-    .send({ access_token: adminSession, name: "test" })
+    .send({ access_token: adminSession, username: "test" })
   expect(status).toBe(404)
 })
 

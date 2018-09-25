@@ -1,20 +1,25 @@
-import { Report } from '.'
-import { User } from '../user'
+import { Report } from "."
 
-let user, report
+let report
 
 beforeEach(async () => {
-  user = await User.create({ email: 'a@a.com', password: '123456' })
-  report = await Report.create({ user, userID: 'test', latitude: 'test', longitude: 'test', description: 'test', category: 'test', confirmations: 'test', fixed: 'test', extra: 'test' })
+  report = await Report.create({
+    userID: "admin",
+    latitude: 55.2,
+    longitude: 22.1,
+    description: "Report",
+    category: "test",
+    confirmations: 1,
+    fixed: false,
+    extra: "extra"
+  })
 })
 
-describe('view', () => {
-  it('returns simple view', () => {
+describe("view", () => {
+  it("returns simple view", () => {
     const view = report.view()
-    expect(typeof view).toBe('object')
+    expect(typeof view).toBe("object")
     expect(view.id).toBe(report.id)
-    expect(typeof view.user).toBe('object')
-    expect(view.user.id).toBe(user.id)
     expect(view.userID).toBe(report.userID)
     expect(view.latitude).toBe(report.latitude)
     expect(view.longitude).toBe(report.longitude)
@@ -27,12 +32,10 @@ describe('view', () => {
     expect(view.updatedAt).toBeTruthy()
   })
 
-  it('returns full view', () => {
+  it("returns full view", () => {
     const view = report.view(true)
-    expect(typeof view).toBe('object')
+    expect(typeof view).toBe("object")
     expect(view.id).toBe(report.id)
-    expect(typeof view.user).toBe('object')
-    expect(view.user.id).toBe(user.id)
     expect(view.userID).toBe(report.userID)
     expect(view.latitude).toBe(report.latitude)
     expect(view.longitude).toBe(report.longitude)

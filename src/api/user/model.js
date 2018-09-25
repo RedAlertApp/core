@@ -1,4 +1,3 @@
-import crypto from "crypto"
 import bcrypt from "bcrypt"
 import mongoose from "mongoose"
 import mongooseKeywords from "mongoose-keywords"
@@ -71,7 +70,7 @@ userSchema.methods = {
     let fields = ["id", "username", "points"]
 
     if (full) {
-      fields = [...fields, "email", "createdAt"]
+      fields = [...fields, "email", "role", "createdAt"]
     }
 
     fields.forEach(field => {
