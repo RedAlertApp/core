@@ -41,7 +41,7 @@ const config = {
   test: {},
   development: {
     mongo: {
-      uri: "mongodb://localhost/red-alert-api-dev",
+      uri: process.env.MONGODB_URI || "mongodb://localhost/red-alert-api-dev",
       options: {
         debug: true
       }
