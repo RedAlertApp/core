@@ -19,7 +19,7 @@
     "collectCoverage": true
   },
   "devDependencies": {
-    "@babel/cli": "7.1.0",
+    "@babel/cli": "7.1.2",
     "babel-core": "7.0.0-bridge.0",
     "apidoc": "0.17.6",
     "apidoc-markdown": "0.2.0",
