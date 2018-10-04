@@ -36,7 +36,7 @@
     "nock": "10.0.0",
     "nodemon": "1.18.4",
     "opn-cli": "3.1.0",
-    "sinon": "6.3.4",
+    "sinon": "6.3.5",
     "supertest": "3.3.0"
   },
   "dependencies": {
@@ -70,7 +70,7 @@
     "express-force-ssl": "0.3.2",
     "jsonwebtoken": "8.3.0",
     "logrocket": "0.6.17",
-    "mongoose": "5.3.0",
+    "mongoose": "5.3.1",
     "mongoose-create-unique": "0.4.4",
     "mongoose-keywords": "0.4.0",
     "morgan": "1.9.1",
