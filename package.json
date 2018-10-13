@@ -85,6 +85,6 @@
     "sendgrid": "5.2.3",
     "socket.io": "2.1.1",
     "cross-env": "5.2.0",
-    "dotenv-safe": "6.0.0"
+    "dotenv-safe": "6.1.0"
   }
 }
