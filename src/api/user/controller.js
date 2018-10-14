@@ -72,8 +72,9 @@ export const updatePassword = (
     .then(notFound(res))
     .then(result => {
       if (!result) return null
+      const isAdmin = user.role === "admin"
       const isSelfUpdate = user.id === result.id
-      if (!isSelfUpdate) {
+      if (!isSelfUpdate && !isAdmin) {
         res.status(401).json({
           valid: false,
           param: "password",
@@ -83,7 +84,7 @@ export const updatePassword = (
       }
       return result
     })
-    .then(user => (user ? user.set({ password: body.password }).save() : null))
+    .then(user => (user ? Object.assign(user, body).save() : null))
     .then(user => (user ? user.view(true) : null))
     .then(success(res))
     .catch(next)

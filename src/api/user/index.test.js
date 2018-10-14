@@ -94,17 +94,15 @@ test("GET /users/me 401", async () => {
   expect(status).toBe(401)
 })
 
-test("GET /users/:id 200", async () => {
-  const { status, body } = await request(app()).get(`${apiRoot}/${user1.id}`)
-  expect(status).toBe(200)
-  expect(typeof body).toBe("object")
-  expect(body.id).toBe(user1.id)
+test("GET /users/:id 401", async () => {
+  const { status } = await request(app()).get(`${apiRoot}/${user1.id}`)
+  expect(status).toBe(401)
 })
 
 test("GET /users/:id 404", async () => {
-  const { status } = await request(app()).get(
-    apiRoot + "/123456789098765432123456"
-  )
+  const { status } = await request(app())
+    .get(apiRoot + "/123456789098765432123456")
+    .query({ access_token: adminSession })
   expect(status).toBe(404)
 })
 
@@ -298,8 +296,7 @@ const passwordMatch = async (password, userId) => {
 test("PUT /users/me/password 200 (user)", async () => {
   const { status, body } = await request(app())
     .put(apiRoot + "/me/password")
-    .auth("a@a.com", "123456")
-    .send({ password: "654321" })
+    .send({ access_token: session1, password: "654321" })
   expect(status).toBe(200)
   expect(typeof body).toBe("object")
   expect(body.email).toBe("a@a.com")
@@ -309,8 +306,7 @@ test("PUT /users/me/password 200 (user)", async () => {
 test("PUT /users/me/password 400 (user) - invalid password", async () => {
   const { status, body } = await request(app())
     .put(apiRoot + "/me/password")
-    .auth("a@a.com", "123456")
-    .send({ password: "321" })
+    .send({ access_token: session1, password: "321" })
   expect(status).toBe(400)
   expect(typeof body).toBe("object")
   expect(body.param).toBe("password")
@@ -319,7 +315,8 @@ test("PUT /users/me/password 400 (user) - invalid password", async () => {
 test("PUT /users/me/password 401 (user) - invalid authentication method", async () => {
   const { status } = await request(app())
     .put(apiRoot + "/me/password")
-    .send({ access_token: session1, password: "654321" })
+    .auth("a@a.com", "123456")
+    .send({ password: "654321" })
   expect(status).toBe(401)
 })
 
@@ -333,8 +330,7 @@ test("PUT /users/me/password 401", async () => {
 test("PUT /users/:id/password 200 (user)", async () => {
   const { status, body } = await request(app())
     .put(`${apiRoot}/${user1.id}/password`)
-    .auth("a@a.com", "123456")
-    .send({ password: "654321" })
+    .send({ access_token: session1, password: "654321" })
   expect(status).toBe(200)
   expect(typeof body).toBe("object")
   expect(body.email).toBe("a@a.com")
@@ -344,8 +340,7 @@ test("PUT /users/:id/password 200 (user)", async () => {
 test("PUT /users/:id/password 400 (user) - invalid password", async () => {
   const { status, body } = await request(app())
     .put(`${apiRoot}/${user1.id}/password`)
-    .auth("a@a.com", "123456")
-    .send({ password: "321" })
+    .send({ access_token: session1, password: "321" })
   expect(status).toBe(400)
   expect(typeof body).toBe("object")
   expect(body.param).toBe("password")
@@ -354,15 +349,15 @@ test("PUT /users/:id/password 400 (user) - invalid password", async () => {
 test("PUT /users/:id/password 401 (user) - another user", async () => {
   const { status } = await request(app())
     .put(`${apiRoot}/${user1.id}/password`)
-    .auth("b@b.com", "123456")
-    .send({ password: "654321" })
+    .send({ access_token: session2, password: "654321" })
   expect(status).toBe(401)
 })
 
 test("PUT /users/:id/password 401 (user) - invalid authentication method", async () => {
   const { status } = await request(app())
     .put(`${apiRoot}/${user1.id}/password`)
-    .send({ access_token: session1, password: "654321" })
+    .auth("a@a.com", "123456")
+    .send({ password: "654321" })
   expect(status).toBe(401)
 })
 
@@ -376,8 +371,7 @@ test("PUT /users/:id/password 401", async () => {
 test("PUT /users/:id/password 404 (user)", async () => {
   const { status } = await request(app())
     .put(apiRoot + "/123456789098765432123456/password")
-    .auth("a@a.com", "123456")
-    .send({ password: "654321" })
+    .send({ access_token: adminSession, password: "654321" })
   expect(status).toBe(404)
 })
 
