@@ -88,6 +88,7 @@ router.put("/:id", token({ required: true }), body({ username }), update)
  * @api {put} /users/:id/password Update password
  * @apiName UpdatePassword
  * @apiGroup User
+ * @apiPermission user
  * @apiHeader {String} Authorization Basic authorization with email and password.
  * @apiParam {String{6..}} password User's new password.
  * @apiSuccess (Success 201) {Object} user User's data.
