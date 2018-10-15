@@ -6,6 +6,15 @@ import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt"
 import { jwtSecret, masterKey } from "../../config"
 import User, { schema } from "../../api/user/model"
 
+export const jwtOptions = {
+  secretOrKey: jwtSecret,
+  jwtFromRequest: ExtractJwt.fromExtractors([
+    ExtractJwt.fromUrlQueryParameter("access_token"),
+    ExtractJwt.fromBodyField("access_token"),
+    ExtractJwt.fromAuthHeaderWithScheme("Bearer")
+  ])
+}
+
 export const password = () => (req, res, next) =>
   passport.authenticate("password", { session: false }, (err, user, info) => {
     if (err && err.param) {
@@ -81,22 +90,12 @@ passport.use(
 
 passport.use(
   "token",
-  new JwtStrategy(
-    {
-      secretOrKey: jwtSecret,
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        ExtractJwt.fromUrlQueryParameter("access_token"),
-        ExtractJwt.fromBodyField("access_token"),
-        ExtractJwt.fromAuthHeaderWithScheme("Bearer")
-      ])
-    },
-    ({ id }, done) => {
-      User.findById(id)
-        .then(user => {
-          done(null, user)
-          return null
-        })
-        .catch(done)
-    }
-  )
+  new JwtStrategy(jwtOptions, ({ id }, done) => {
+    User.findById(id)
+      .then(user => {
+        done(null, user)
+        return null
+      })
+      .catch(done)
+  })
 )

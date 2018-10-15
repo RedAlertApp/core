@@ -1,6 +1,14 @@
 import { Report } from "../api/report"
+import { authorize } from "../services/passport-jwt-socket.io"
+import { jwtOptions } from "../services/passport"
+
+function verify(jwtPayload, done) {
+  console.log(jwtPayload)
+}
 
 const startRedAlert = io => {
+  io.use(authorize(jwtOptions, verify))
+
   io.on("connection", socket => {
     console.log("socket connected")
 
@@ -58,6 +66,10 @@ const startRedAlert = io => {
     })
 
     socket.on("disconnect", () => {})
+  })
+
+  io.on("error", error => {
+    console.log(error)
   })
 }
 
