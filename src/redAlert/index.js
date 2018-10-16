@@ -1,17 +1,8 @@
 import { Report } from "../api/report"
-import { jwtOptions } from "../services/passport"
-import socketioJwt from "socketio-jwt"
 
 const startRedAlert = io => {
-  io.use(
-    socketioJwt.authorize({
-      secret: jwtOptions.secretOrKey,
-      handshake: true
-    })
-  )
-
   io.on("connection", socket => {
-    console.log(`socket connected ${socket.decoded_token}`)
+    console.log("socket connected")
 
     Report.find({ fixed: false }, (err, reports) => {
       if (err) console.error(err)
