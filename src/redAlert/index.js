@@ -1,76 +1,98 @@
 import { Report } from "../api/report"
 import { tokenSockets } from "../services/passport"
+import { success } from "../services/response"
 
 const startRedAlert = io => {
   io.on("connection", socket => {
-    console.log("socket connected")
-
-    //const token = "chuj"
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViYzRiNTY3MWIyNWNjNDI2MGMzN2UzMSIsImlhdCI6MTUzOTYxODI5NH0.E7cD5IXwt0ZIfumfyBKuuqLvDyLofR_DUAaAT-CZoXI"
-
-    tokenSockets(token, user => {
-      console.log(user)
+    socket.auth = false
+    socket.on("authenticate", data => {
+      // Check the auth data sent by the client
+      checkAuthToken(data.token, (err, user) => {
+        if (!err && success) {
+          console.log("Authenticated socket " + socket.id)
+          socket.auth = true
+        }
+      })
     })
 
-    Report.find({ fixed: false }, (err, reports) => {
-      if (err) console.error(err)
-      socket.emit("reports", reports)
-    })
+    setTimeout(() => {
+      // If the socket didn't authenticate, disconnect it
+      if (!socket.auth) {
+        console.log("Disconnecting socket " + socket.id)
+        socket.disconnect("unauthorized")
+      }
+    }, 3000) // 3 sec to auth
 
-    socket.on("newReport", report => {
-      let newReport = new Report({
-        userID: report.userID,
-        latitude: report.latitude,
-        longitude: report.longitude,
-        description: report.description,
-        category: report.category,
-        confirmations: report.confirmations,
-        extra: report.extra
+    if (socket.auth) {
+      Report.find({ fixed: false }, (err, reports) => {
+        if (err) console.error(err)
+        socket.emit("reports", reports)
       })
 
-      newReport.save((err, report) => {
-        if (err) console.error(err)
-        Report.find({ fixed: false }, (err, reports) => {
+      socket.on("newReport", report => {
+        let newReport = new Report({
+          userID: report.userID,
+          latitude: report.latitude,
+          longitude: report.longitude,
+          description: report.description,
+          category: report.category,
+          confirmations: report.confirmations,
+          extra: report.extra
+        })
+
+        newReport.save((err, report) => {
           if (err) console.error(err)
-          io.emit("reports", reports)
+          Report.find({ fixed: false }, (err, reports) => {
+            if (err) console.error(err)
+            io.emit("reports", reports)
+          })
         })
       })
-    })
 
-    socket.on("fixReport", reportID => {
-      Report.findOneAndUpdate(
-        { _id: reportID },
-        { fixed: true },
-        (err, result) => {
-          if (err) console.error(err)
-          Report.find({ fixed: false }, (err, reports) => {
+      socket.on("fixReport", reportID => {
+        Report.findOneAndUpdate(
+          { _id: reportID },
+          { fixed: true },
+          (err, result) => {
             if (err) console.error(err)
-            io.emit("reports", reports)
-          })
-        }
-      )
-    })
+            Report.find({ fixed: false }, (err, reports) => {
+              if (err) console.error(err)
+              io.emit("reports", reports)
+            })
+          }
+        )
+      })
 
-    socket.on("confirmReport", reportID => {
-      Report.findOneAndUpdate(
-        { _id: reportID },
-        { $inc: { confirmations: 1 } },
-        (err, result) => {
-          if (err) console.error(err)
-          Report.find({ fixed: false }, (err, reports) => {
+      socket.on("confirmReport", reportID => {
+        Report.findOneAndUpdate(
+          { _id: reportID },
+          { $inc: { confirmations: 1 } },
+          (err, result) => {
             if (err) console.error(err)
-            io.emit("reports", reports)
-          })
-        }
-      )
-    })
+            Report.find({ fixed: false }, (err, reports) => {
+              if (err) console.error(err)
+              io.emit("reports", reports)
+            })
+          }
+        )
+      })
+    }
 
     socket.on("disconnect", () => {})
   })
 
   io.on("error", error => {
     console.log(error)
+  })
+}
+
+function checkAuthToken(token, callback) {
+  tokenSockets(token, user => {
+    if (user) {
+      callback(null, user)
+    } else {
+      callback(new Error("Not authorized"), null)
+    }
   })
 }
 
