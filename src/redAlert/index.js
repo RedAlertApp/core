@@ -11,6 +11,7 @@ const startRedAlert = io => {
         if (!err && success) {
           console.log("Authenticated socket " + socket.id)
           socket.auth = true
+          onAuth(io, socket)
         }
       })
     })
@@ -24,16 +25,7 @@ const startRedAlert = io => {
     }, 3000) // 3 sec to auth
 
     if (socket.auth) {
-      Report.find({ fixed: false }, (err, reports) => {
-        if (err) console.error(err)
-        socket.emit("reports", reports)
-      })
-
-      socket.on("newReport", report => onNewReport(io, report))
-
-      socket.on("fixReport", reportID => onFixReport(io, reportID))
-
-      socket.on("confirmReport", reportID => onConfirmReport(io, reportID))
+      onAuth(io, socket)
     }
 
     socket.on("disconnect", () => {})
@@ -42,6 +34,19 @@ const startRedAlert = io => {
   io.on("error", error => {
     console.log(error)
   })
+}
+
+const onAuth = (io, socket) => {
+  Report.find({ fixed: false }, (err, reports) => {
+    if (err) console.error(err)
+    socket.emit("reports", reports)
+  })
+
+  socket.on("newReport", report => onNewReport(io, report))
+
+  socket.on("fixReport", reportID => onFixReport(io, reportID))
+
+  socket.on("confirmReport", reportID => onConfirmReport(io, reportID))
 }
 
 const onNewReport = (io, report) => {
