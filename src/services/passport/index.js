@@ -36,7 +36,6 @@ export const token = ({ required, roles = User.roles } = {}) => (
   next
 ) =>
   passport.authenticate("token", { session: false }, (err, user, info) => {
-    console.log(user)
     if (
       err ||
       (required && !user) ||
