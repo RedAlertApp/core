@@ -85,6 +85,7 @@
     "request": "2.88.0",
     "request-promise": "4.2.2",
     "sendgrid": "5.2.3",
-    "socket.io": "2.1.1"
+    "socket.io": "2.1.1",
+    "socketio-auth": "^0.1.1"
   }
 }

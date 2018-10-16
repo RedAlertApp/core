@@ -1,42 +1,26 @@
 import { Report } from "../api/report"
 import { tokenSockets } from "../services/passport"
-import { success } from "../services/response"
+import socketioAuth from "socketio-auth"
 
 const startRedAlert = io => {
-  io.on("connection", socket => {
-    socket.auth = false
-    socket.on("authenticate", data => {
-      // Check the auth data sent by the client
-      checkAuthToken(data.token, (err, user) => {
-        if (!err && success) {
-          console.log("Authenticated socket " + socket.id)
-          socket.auth = true
-          onAuth(io, socket)
-        }
-      })
-    })
-
-    setTimeout(() => {
-      // If the socket didn't authenticate, disconnect it
-      if (!socket.auth) {
-        console.log("Disconnecting socket " + socket.id)
-        socket.disconnect("unauthorized")
-      }
-    }, 3000) // 3 sec to auth
-
-    if (socket.auth) {
-      onAuth(io, socket)
-    }
-
-    socket.on("disconnect", () => {})
-  })
-
-  io.on("error", error => {
-    console.log(error)
+  socketioAuth(io, {
+    authenticate,
+    postAuthenticate,
+    timeout: 3000
   })
 }
 
-const onAuth = (io, socket) => {
+const authenticate = async (client, data, callback) => {
+  tokenSockets(data.token, user => {
+    if (user) {
+      callback(null, user)
+    } else {
+      callback(new Error("Not authorized"))
+    }
+  })
+}
+
+const postAuthenticate = (io, socket) => {
   Report.find({ fixed: false }, (err, reports) => {
     if (err) console.error(err)
     socket.emit("reports", reports)
@@ -91,16 +75,6 @@ const onConfirmReport = (io, reportID) => {
       })
     }
   )
-}
-
-const checkAuthToken = (token, callback) => {
-  tokenSockets(token, user => {
-    if (user) {
-      callback(null, user)
-    } else {
-      callback(new Error("Not authorized"), null)
-    }
-  })
 }
 
 export default startRedAlert
