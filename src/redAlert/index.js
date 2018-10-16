@@ -22,7 +22,7 @@ const authenticate = async (client, data, callback) => {
 
 const postAuthenticate = (io, socket) => {
   Report.find({ fixed: false }, (err, reports) => {
-    if (err) console.error(err)
+    handleError(err)
     socket.emit("reports", reports)
   })
 
@@ -45,9 +45,9 @@ const onNewReport = (io, report) => {
   })
 
   newReport.save((err, report) => {
-    if (err) console.error(err)
+    handleError(err)
     Report.find({ fixed: false }, (err, reports) => {
-      if (err) console.error(err)
+      handleError(err)
       io.emit("reports", reports)
     })
   })
@@ -55,9 +55,9 @@ const onNewReport = (io, report) => {
 
 const onFixReport = (io, reportID) => {
   Report.findOneAndUpdate({ _id: reportID }, { fixed: true }, (err, result) => {
-    if (err) console.error(err)
+    handleError(err)
     Report.find({ fixed: false }, (err, reports) => {
-      if (err) console.error(err)
+      handleError(err)
       io.emit("reports", reports)
     })
   })
@@ -68,13 +68,17 @@ const onConfirmReport = (io, reportID) => {
     { _id: reportID },
     { $inc: { confirmations: 1 } },
     (err, result) => {
-      if (err) console.error(err)
+      handleError(err)
       Report.find({ fixed: false }, (err, reports) => {
-        if (err) console.error(err)
+        handleError(err)
         io.emit("reports", reports)
       })
     }
   )
+}
+
+const handleError = err => {
+  if (err) console.error(err)
 }
 
 export default startRedAlert
