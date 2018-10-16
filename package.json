@@ -66,6 +66,8 @@
     "bodymen": "1.1.0",
     "compression": "1.7.3",
     "cors": "2.8.4",
+    "cross-env": "5.2.0",
+    "dotenv-safe": "6.1.0",
     "express": "4.16.4",
     "express-force-ssl": "0.3.2",
     "jsonwebtoken": "8.3.0",
@@ -84,7 +86,6 @@
     "request-promise": "4.2.2",
     "sendgrid": "5.2.3",
     "socket.io": "2.1.1",
-    "cross-env": "5.2.0",
-    "dotenv-safe": "6.1.0"
+    "socketio-jwt": "^4.5.0"
   }
 }
