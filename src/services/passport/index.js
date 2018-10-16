@@ -36,6 +36,7 @@ export const token = ({ required, roles = User.roles } = {}) => (
   next
 ) =>
   passport.authenticate("token", { session: false }, (err, user, info) => {
+    console.log(user)
     if (
       err ||
       (required && !user) ||
@@ -48,6 +49,16 @@ export const token = ({ required, roles = User.roles } = {}) => (
       next()
     })
   })(req, res, next)
+
+// Hacky hacky
+export const tokenSockets = (token, callback) =>
+  passport.authenticate("token-sockets", {}, (err, user, info) => {
+    if (err || !user) {
+      callback(null)
+    } else {
+      callback(user)
+    }
+  })(token)
 
 passport.use(
   "password",
@@ -98,4 +109,23 @@ passport.use(
       })
       .catch(done)
   })
+)
+
+// Hacky hacky
+passport.use(
+  "token-sockets",
+  new JwtStrategy(
+    {
+      secretOrKey: jwtSecret,
+      jwtFromRequest: token => token
+    },
+    ({ id }, done) => {
+      User.findById(id)
+        .then(user => {
+          done(null, user)
+          return null
+        })
+        .catch(done)
+    }
+  )
 )
