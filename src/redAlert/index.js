@@ -11,6 +11,7 @@ const startRedAlert = io => {
 }
 
 const authenticate = async (client, data, callback) => {
+  console.log("try")
   tokenSockets(data.token, user => {
     if (user) {
       callback(null, user)
