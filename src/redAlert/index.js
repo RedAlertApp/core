@@ -2,7 +2,10 @@ import { Report } from "../api/report"
 import { tokenSockets } from "../services/passport"
 import socketioAuth from "socketio-auth"
 
+let ioInstance
+
 const startRedAlert = io => {
+  ioInstance = io
   socketioAuth(io, {
     authenticate,
     postAuthenticate,
@@ -10,8 +13,7 @@ const startRedAlert = io => {
   })
 }
 
-const authenticate = async (client, data, callback) => {
-  console.log("try")
+const authenticate = async (socket, data, callback) => {
   tokenSockets(data.token, user => {
     if (user) {
       callback(null, user)
@@ -21,20 +23,21 @@ const authenticate = async (client, data, callback) => {
   })
 }
 
-const postAuthenticate = (io, socket) => {
+const postAuthenticate = (socket, data) => {
   Report.find({ fixed: false }, (err, reports) => {
     handleError(err)
     socket.emit("reports", reports)
   })
 
-  socket.on("newReport", report => onNewReport(io, report))
+  socket.on("newReport", report => onNewReport(report))
 
-  socket.on("fixReport", reportID => onFixReport(io, reportID))
+  socket.on("fixReport", reportID => onFixReport(reportID))
 
-  socket.on("confirmReport", reportID => onConfirmReport(io, reportID))
+  socket.on("confirmReport", reportID => onConfirmReport(reportID))
+  socket.on("confirmReport", reportID => onConfirmReport(reportID))
 }
 
-const onNewReport = (io, report) => {
+const onNewReport = report => {
   let newReport = new Report({
     userID: report.userID,
     latitude: report.latitude,
@@ -49,22 +52,22 @@ const onNewReport = (io, report) => {
     handleError(err)
     Report.find({ fixed: false }, (err, reports) => {
       handleError(err)
-      io.emit("reports", reports)
+      ioInstance.emit("reports", reports)
     })
   })
 }
 
-const onFixReport = (io, reportID) => {
+const onFixReport = reportID => {
   Report.findOneAndUpdate({ _id: reportID }, { fixed: true }, (err, result) => {
     handleError(err)
     Report.find({ fixed: false }, (err, reports) => {
       handleError(err)
-      io.emit("reports", reports)
+      ioInstance.emit("reports", reports)
     })
   })
 }
 
-const onConfirmReport = (io, reportID) => {
+const onConfirmReport = reportID => {
   Report.findOneAndUpdate(
     { _id: reportID },
     { $inc: { confirmations: 1 } },
@@ -72,7 +75,7 @@ const onConfirmReport = (io, reportID) => {
       handleError(err)
       Report.find({ fixed: false }, (err, reports) => {
         handleError(err)
-        io.emit("reports", reports)
+        ioInstance.emit("reports", reports)
       })
     }
   )
