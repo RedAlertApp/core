@@ -81,11 +81,9 @@ test.skip("Connected on connection with real token", done => {
 test.skip("Get reports on connection with real token", done => {
   socket.emit("authentication", { token: token1 })
   socket.on("authenticated", data => {
-    console.log(data)
     done()
   })
   socket.on("reports", reports => {
-    console.log(reports)
     expect(reports).toBeTruthy()
     done()
   })
