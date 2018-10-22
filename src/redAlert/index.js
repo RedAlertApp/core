@@ -16,6 +16,7 @@ const startRedAlert = io => {
 const authenticate = async (socket, data, callback) => {
   tokenSockets(data.token, user => {
     if (user) {
+      console.log(`Authenticated socket. User: ${user.username}`)
       callback(null, user)
     } else {
       callback(new Error("Not authorized"))
