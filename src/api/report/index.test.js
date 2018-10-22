@@ -70,11 +70,11 @@ test("GET /reports 200 (admin)", async () => {
   expect(Number.isNaN(body.count)).toBe(false)
 })
 
-test("GET /reports 401 (user)", async () => {
+test("GET /reports 200 (user)", async () => {
   const { status } = await request(app())
     .get(`${apiRoot}`)
     .query({ access_token: userSession })
-  expect(status).toBe(401)
+  expect(status).toBe(200)
 })
 
 test("GET /reports 401", async () => {
@@ -91,11 +91,11 @@ test("GET /reports/:id 200 (admin)", async () => {
   expect(body.id).toEqual(report.id)
 })
 
-test("GET /reports/:id 401 (user)", async () => {
+test("GET /reports/:id 200 (user)", async () => {
   const { status } = await request(app())
     .get(`${apiRoot}/${report.id}`)
     .query({ access_token: userSession })
-  expect(status).toBe(401)
+  expect(status).toBe(200)
 })
 
 test("GET /reports/:id 401", async () => {

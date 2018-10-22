@@ -65,7 +65,12 @@ router.post(
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 401 admin access only.
  */
-router.get("/", token({ required: true, roles: ["admin"] }), query(), index)
+router.get(
+  "/",
+  token({ required: true, roles: ["admin", "user"] }),
+  query(),
+  index
+)
 
 /**
  * @api {get} /reports/:id Retrieve report
@@ -78,7 +83,7 @@ router.get("/", token({ required: true, roles: ["admin"] }), query(), index)
  * @apiError 404 Report not found.
  * @apiError 401 admin access only.
  */
-router.get("/:id", token({ required: true, roles: ["admin"] }), show)
+router.get("/:id", token({ required: true, roles: ["admin", "user"] }), show)
 
 /**
  * @api {put} /reports/:id Update report
