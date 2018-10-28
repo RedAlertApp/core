@@ -70,6 +70,8 @@
     "dotenv-safe": "6.1.0",
     "express": "4.16.4",
     "express-force-ssl": "0.3.2",
+    "express-graphql": "0.6.12",
+    "graphql": "14.0.2",
     "jsonwebtoken": "8.3.0",
     "logrocket": "0.6.17",
     "mongoose": "5.3.6",
@@ -86,6 +88,6 @@
     "request-promise": "4.2.2",
     "sendgrid": "5.2.3",
     "socket.io": "2.1.1",
-    "socketio-auth": "^0.1.1"
+    "socketio-auth": "0.1.1"
   }
 }
