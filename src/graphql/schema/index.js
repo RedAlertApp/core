@@ -1,5 +1,6 @@
 import {
   GraphQLObjectType,
+  GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLSchema,
   GraphQLString,
@@ -29,6 +30,21 @@ export function getProjection(fieldASTs) {
 const ReportType = new GraphQLObjectType({
   name: "Report",
   description: "Report item",
+  fields: () => ({
+    id: { type: GraphQLString },
+    userID: { type: GraphQLString },
+    latitude: { type: GraphQLFloat },
+    longitude: { type: GraphQLFloat },
+    description: { type: GraphQLString },
+    category: { type: GraphQLString },
+    confirmations: { type: GraphQLInt },
+    fixed: { type: GraphQLBoolean },
+    extra: { type: GraphQLString }
+  })
+})
+
+const ReportInputType = new GraphQLInputObjectType({
+  name: "ReportInput",
   fields: () => ({
     id: { type: GraphQLString },
     userID: { type: GraphQLString },
@@ -76,16 +92,49 @@ const ReportById = {
   }
 }
 
+const CreateReport = {
+  type: ReportType,
+  args: {
+    report: { type: ReportInputType }
+  },
+  resolve: (value, { report }) => {
+    let newReport = new Report({
+      userID: report.userID,
+      latitude: report.latitude,
+      longitude: report.longitude,
+      description: report.description,
+      category: report.category,
+      confirmations: report.confirmations,
+      extra: report.extra
+    })
+    const savedReport = new Promise((resolve, reject) => {
+      newReport.save((err, report) => {
+        err ? reject(err) : resolve(report)
+      })
+    })
+
+    return savedReport
+  }
+}
+
 const RedAlertQueryRootType = new GraphQLObjectType({
-  name: "RedAlertAppSchema",
+  name: "RedAlertAppSchemaQuery",
   fields: {
     reports: Reports,
     report: ReportById
   }
 })
 
+const RedAlertMutationRootType = new GraphQLObjectType({
+  name: "RedAlertAppSchemaMutation",
+  fields: {
+    createReport: CreateReport
+  }
+})
+
 const RedAlertAppSchema = new GraphQLSchema({
-  query: RedAlertQueryRootType
+  query: RedAlertQueryRootType,
+  mutation: RedAlertMutationRootType
 })
 
 export default RedAlertAppSchema
