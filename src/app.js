@@ -9,7 +9,7 @@ import mongoose from "./services/mongoose"
 import express from "./services/express"
 import api from "./api"
 import startRedAlert from "./redAlert"
-import { schema, root } from "./graphql"
+import RedAlertAppSchema from "./graphql/schema"
 
 const app = express(apiRoot, api)
 const httpServer = http.createServer(app)
@@ -20,8 +20,7 @@ startRedAlert(io)
 app.use(
   "/graphql",
   graphqlHTTP({
-    schema: schema,
-    rootValue: root,
+    schema: RedAlertAppSchema,
     graphiql: true
   })
 )
