@@ -2,14 +2,13 @@ import "./logrocketSetup"
 
 import http from "http"
 import socketIO from "socket.io"
-import graphqlHTTP from "express-graphql"
 
 import { env, mongo, port, ip, apiRoot } from "./config"
 import mongoose from "./services/mongoose"
 import express from "./services/express"
 import api from "./api"
 import startRedAlert from "./redAlert"
-import RedAlertAppSchema from "./graphql/schema"
+import graphqlMiddleware from "./middlewares/graphql"
 
 const app = express(apiRoot, api)
 const httpServer = http.createServer(app)
@@ -17,13 +16,7 @@ const io = socketIO(httpServer)
 
 startRedAlert(io)
 
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    schema: RedAlertAppSchema,
-    graphiql: true
-  })
-)
+app.use("/graphql", graphqlMiddleware)
 
 mongoose.connect(
   mongo.uri,
